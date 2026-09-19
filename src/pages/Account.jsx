@@ -1,5 +1,14 @@
 // Patisserie Postcard: the account area remains useful before backend sync is connected.
-import { ChevronRight, Heart, LogOut, MapPin, Package, Settings, Trash2, UserRound } from "lucide-react";
+import {
+  ChevronRight,
+  Heart,
+  LogOut,
+  MapPin,
+  Package,
+  Settings,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,40 +22,606 @@ import { useAppStore } from "../store/useAppStore";
 import { OrdersList } from "./OrderPages";
 import { useLocale } from "../contexts/LocaleContext";
 
-const getProfileSchema = (t) => z.object({ name: z.string().min(2, t("validation.name")), email: z.string().email(t("validation.validEmail")), phone: z.string().min(7, t("validation.phone")) });
+const getProfileSchema = t =>
+  z.object({
+    name: z.string().min(2, t("validation.name")),
+    email: z.string().email(t("validation.validEmail")),
+    phone: z.string().min(7, t("validation.phone")),
+  });
 const ADDRESS_KEY = "cakely-addresses";
 const PREFERENCE_KEY = "cakely-preferences";
-const defaultPreferences = { email: true, sms: false, marketing: false, push: false, reminders: false };
-function readStored(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }
-function writeStored(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Storage can be unavailable in private browsing. */ } }
+const defaultPreferences = {
+  email: true,
+  sms: false,
+  marketing: false,
+  push: false,
+  reminders: false,
+};
+function readStored(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+function writeStored(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* Storage can be unavailable in private browsing. */
+  }
+}
 
 export function AccountLayout() {
-  const { t } = useLocale(); const user = useAppStore((state) => state.user); const logout = useAppStore((state) => state.logout); const navigate = useNavigate(); const accountNav = [{ to: "/account", label: t("account.profile"), icon: UserRound, end: true }, { to: "/account/orders", label: t("account.orders"), icon: Package }, { to: "/account/favorites", label: t("account.saved"), icon: Heart }, { to: "/account/addresses", label: t("account.addresses"), icon: MapPin }, { to: "/account/settings", label: t("account.settings"), icon: Settings }];
-  function exit() { logout(); toast.success(t("account.signedOut")); navigate("/"); }
-  return <section className="account-page page-width"><div className="account-intro"><div><p className="section-kicker">{t("account.kicker")}</p><h1>{t("account.hello")}, <em>{user?.name?.split(" ")[0] || "there"}.</em></h1></div><p>{t("account.intro")}</p></div><div className="account-layout"><aside className="account-side"><div className="account-person"><span>{user?.initials || "CT"}</span><div><strong>{user?.name || t("account.guest")}</strong><small>{user?.email || t("account.signIn")}</small></div></div><nav aria-label={t("nav.account")}>{accountNav.map(({ to, label, icon: Icon, end }) => <NavLink end={end} to={to} key={to}><Icon size={17} aria-hidden="true" /> {label}<ChevronRight size={15} aria-hidden="true" /></NavLink>)}<button type="button" onClick={exit}><LogOut size={17} aria-hidden="true" /> {t("account.signOut")}</button></nav></aside><div className="account-content"><Outlet /></div></div></section>;
+  const { t } = useLocale();
+  const user = useAppStore(state => state.user);
+  const logout = useAppStore(state => state.logout);
+  const navigate = useNavigate();
+  const accountNav = [
+    { to: "/account", label: t("account.profile"), icon: UserRound, end: true },
+    { to: "/account/orders", label: t("account.orders"), icon: Package },
+    { to: "/account/favorites", label: t("account.saved"), icon: Heart },
+    { to: "/account/addresses", label: t("account.addresses"), icon: MapPin },
+    { to: "/account/settings", label: t("account.settings"), icon: Settings },
+  ];
+  function exit() {
+    logout();
+    toast.success(t("account.signedOut"));
+    navigate("/");
+  }
+  return (
+    <section className="account-page page-width">
+      <div className="account-intro">
+        <div>
+          <p className="section-kicker">{t("account.kicker")}</p>
+          <h1>
+            {t("account.hello")},{" "}
+            <em>{user?.name?.split(" ")[0] || "there"}.</em>
+          </h1>
+        </div>
+        <p>{t("account.intro")}</p>
+      </div>
+      <div className="account-layout">
+        <aside className="account-side">
+          <div className="account-person">
+            <span>{user?.initials || "CT"}</span>
+            <div>
+              <strong>{user?.name || t("account.guest")}</strong>
+              <small>{user?.email || t("account.signIn")}</small>
+            </div>
+          </div>
+          <nav aria-label={t("nav.account")}>
+            {accountNav.map(({ to, label, icon: Icon, end }) => (
+              <NavLink end={end} to={to} key={to}>
+                <Icon size={17} aria-hidden="true" /> {label}
+                <ChevronRight size={15} aria-hidden="true" />
+              </NavLink>
+            ))}
+            <button type="button" onClick={exit}>
+              <LogOut size={17} aria-hidden="true" /> {t("account.signOut")}
+            </button>
+          </nav>
+        </aside>
+        <div className="account-content">
+          <Outlet />
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export function ProfilePage() {
-  const { t } = useLocale(); const user = useAppStore((state) => state.user); const setUser = useAppStore((state) => state.setUser); const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(getProfileSchema(t)), defaultValues: user || { name: "", email: "", phone: "" } });
-  async function submit(values) { await new Promise((resolve) => setTimeout(resolve, 320)); setUser({ ...user, ...values }); toast.success(t("account.profileUpdated")); }
-  return <section className="account-panel"><p className="eyebrow">{t("account.profile")}</p><h2>{t("account.know")}</h2><p className="panel-intro">{t("account.profileCopy")}</p><form className="profile-form" onSubmit={handleSubmit(submit)}><ProfileField label={t("checkout.name")} error={errors.name?.message}><input autoComplete="name" className="form-input" {...register("name")} /></ProfileField><ProfileField label={t("checkout.email")} error={errors.email?.message}><input autoComplete="email" className="form-input" type="email" {...register("email")} /></ProfileField><ProfileField label={t("checkout.phone")} error={errors.phone?.message}><input autoComplete="tel" inputMode="tel" className="form-input" {...register("phone")} /></ProfileField><button type="submit" disabled={isSubmitting} className="btn-berry mt-2">{isSubmitting ? t("account.saving") : t("account.save")}</button></form></section>;
+  const { t } = useLocale();
+  const user = useAppStore(state => state.user);
+  const setUser = useAppStore(state => state.setUser);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(getProfileSchema(t)),
+    defaultValues: user || { name: "", email: "", phone: "" },
+  });
+  async function submit(values) {
+    await new Promise(resolve => setTimeout(resolve, 320));
+    setUser({ ...user, ...values });
+    toast.success(t("account.profileUpdated"));
+  }
+  return (
+    <section className="account-panel">
+      <p className="eyebrow">{t("account.profile")}</p>
+      <h2>{t("account.know")}</h2>
+      <p className="panel-intro">{t("account.profileCopy")}</p>
+      <form className="profile-form" onSubmit={handleSubmit(submit)}>
+        <ProfileField label={t("checkout.name")} error={errors.name?.message}>
+          <input
+            autoComplete="name"
+            className="form-input"
+            {...register("name")}
+          />
+        </ProfileField>
+        <ProfileField label={t("checkout.email")} error={errors.email?.message}>
+          <input
+            autoComplete="email"
+            className="form-input"
+            type="email"
+            {...register("email")}
+          />
+        </ProfileField>
+        <ProfileField label={t("checkout.phone")} error={errors.phone?.message}>
+          <input
+            autoComplete="tel"
+            inputMode="tel"
+            className="form-input"
+            {...register("phone")}
+          />
+        </ProfileField>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="btn-berry mt-2"
+        >
+          {isSubmitting ? t("account.saving") : t("account.save")}
+        </button>
+      </form>
+    </section>
+  );
 }
-function ProfileField({ label, error, children }) { return <label className="field"><span className="form-label">{label}</span>{children}{error && <span className="field-error" role="alert">{error}</span>}</label>; }
-export function AccountOrdersPage() { const { t } = useLocale(); return <section className="account-panel"><p className="eyebrow">{t("account.orders")}</p><h2>{t("account.history")}</h2><p className="panel-intro">{t("account.historyCopy")}</p><OrdersList /></section>; }
-export function FavoritesPage() { const { t } = useLocale(); const favorites = useAppStore((state) => state.favorites); const saved = cakes.filter((cake) => favorites.includes(cake.id)); return <section className="account-panel"><p className="eyebrow">{t("account.saved")}</p><h2>{t("account.future")}</h2><p className="panel-intro">{t("account.savedCopy")}</p>{saved.length ? <div className="favorites-grid">{saved.map((cake) => <CakeCard cake={cake} key={cake.id} />)}</div> : <EmptyState title={t("account.nothing")} description={t("account.nothingCopy")} />}</section>; }
+function ProfileField({ label, error, children }) {
+  return (
+    <label className="field">
+      <span className="form-label">{label}</span>
+      {children}
+      {error && (
+        <span className="field-error" role="alert">
+          {error}
+        </span>
+      )}
+    </label>
+  );
+}
+export function AccountOrdersPage() {
+  const { t } = useLocale();
+  return (
+    <section className="account-panel">
+      <p className="eyebrow">{t("account.orders")}</p>
+      <h2>{t("account.history")}</h2>
+      <p className="panel-intro">{t("account.historyCopy")}</p>
+      <OrdersList />
+    </section>
+  );
+}
+export function FavoritesPage() {
+  const { t } = useLocale();
+  const favorites = useAppStore(state => state.favorites);
+  const saved = cakes.filter(cake => favorites.includes(cake.id));
+  return (
+    <section className="account-panel">
+      <p className="eyebrow">{t("account.saved")}</p>
+      <h2>{t("account.future")}</h2>
+      <p className="panel-intro">{t("account.savedCopy")}</p>
+      {saved.length ? (
+        <div className="favorites-grid">
+          {saved.map(cake => (
+            <CakeCard cake={cake} key={cake.id} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title={t("account.nothing")}
+          description={t("account.nothingCopy")}
+        />
+      )}
+    </section>
+  );
+}
 
 export function AddressesPage() {
-  const { t } = useLocale(); const [addresses, setAddresses] = useState(() => readStored(ADDRESS_KEY, [])); const [editing, setEditing] = useState(null); const [form, setForm] = useState({ label: "", line1: "", line2: "", city: "", phone: "", isDefault: false }); const [error, setError] = useState("");
+  const { t } = useLocale();
+  const [addresses, setAddresses] = useState(() => readStored(ADDRESS_KEY, []));
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({
+    label: "",
+    line1: "",
+    line2: "",
+    city: "",
+    phone: "",
+    isDefault: false,
+  });
+  const [error, setError] = useState("");
   useEffect(() => writeStored(ADDRESS_KEY, addresses), [addresses]);
-  function startNew() { setEditing("new"); setError(""); setForm({ label: "", line1: "", line2: "", city: "", phone: "", isDefault: addresses.length === 0 }); }
-  function startEdit(address) { setEditing(address.id); setError(""); setForm({ ...address }); }
-  function closeForm() { setEditing(null); setError(""); }
-  function save(event) { event.preventDefault(); if (!form.label.trim() || !form.line1.trim() || !form.city.trim()) { setError(t("validation.address")); return; } const id = editing === "new" ? `address-${Date.now()}` : editing; const next = { ...form, id, label: form.label.trim(), line1: form.line1.trim(), line2: form.line2.trim(), city: form.city.trim(), phone: form.phone.trim() }; setAddresses((current) => { const updated = current.some((item) => item.id === id) ? current.map((item) => item.id === id ? next : { ...item, isDefault: next.isDefault ? false : item.isDefault }) : [...current.map((item) => ({ ...item, isDefault: next.isDefault ? false : item.isDefault })), next]; return next.isDefault ? updated.map((item) => ({ ...item, isDefault: item.id === id })) : updated; }); closeForm(); toast.success(t("account.addressAdded")); }
-  function remove(id) { setAddresses((current) => current.filter((address) => address.id !== id)); toast.success(t("account.addressRemoved")); }
-  return <section className="account-panel"><div className="account-panel-heading"><div><p className="eyebrow">{t("account.addresses")}</p><h2>{t("account.addressTitle")}</h2><p className="panel-intro">{t("account.noAddressesCopy")}</p></div><button type="button" className="btn-berry" onClick={startNew}><MapPin size={16} aria-hidden="true" /> {t("account.addAddress")}</button></div><p className="account-device-note" role="note">{t("account.savedOnDevice")}</p>{editing && <AddressForm t={t} form={form} setForm={setForm} error={error} onCancel={closeForm} onSubmit={save} />}{addresses.length ? <div className="address-list">{addresses.map((address) => <article className="address-card" key={address.id}><div><div className="address-card-title"><h3>{address.label}</h3>{address.isDefault && <span>{t("account.addressDefault")}</span>}</div><p>{address.line1}{address.line2 && <><br />{address.line2}</>}<br />{address.city}</p>{address.phone && <small>{address.phone}</small>}</div><div className="address-card-actions"><button type="button" className="text-link" onClick={() => startEdit(address)}>{t("account.editAddress")}</button><button type="button" className="text-link text-link-danger" onClick={() => remove(address.id)}><Trash2 size={14} aria-hidden="true" /> {t("account.removeAddress")}</button></div></article>)}</div> : !editing && <EmptyState title={t("account.noAddresses")} description={t("account.noAddressesCopy")} actionLabel={t("account.addAddress")} onAction={startNew} />}</section>;
+  function startNew() {
+    setEditing("new");
+    setError("");
+    setForm({
+      label: "",
+      line1: "",
+      line2: "",
+      city: "",
+      phone: "",
+      isDefault: addresses.length === 0,
+    });
+  }
+  function startEdit(address) {
+    setEditing(address.id);
+    setError("");
+    setForm({ ...address });
+  }
+  function closeForm() {
+    setEditing(null);
+    setError("");
+  }
+  function save(event) {
+    event.preventDefault();
+    if (!form.label.trim() || !form.line1.trim() || !form.city.trim()) {
+      setError(t("validation.address"));
+      return;
+    }
+    const id = editing === "new" ? `address-${Date.now()}` : editing;
+    const next = {
+      ...form,
+      id,
+      label: form.label.trim(),
+      line1: form.line1.trim(),
+      line2: form.line2.trim(),
+      city: form.city.trim(),
+      phone: form.phone.trim(),
+    };
+    setAddresses(current => {
+      const updated = current.some(item => item.id === id)
+        ? current.map(item =>
+            item.id === id
+              ? next
+              : { ...item, isDefault: next.isDefault ? false : item.isDefault }
+          )
+        : [
+            ...current.map(item => ({
+              ...item,
+              isDefault: next.isDefault ? false : item.isDefault,
+            })),
+            next,
+          ];
+      return next.isDefault
+        ? updated.map(item => ({ ...item, isDefault: item.id === id }))
+        : updated;
+    });
+    closeForm();
+    toast.success(t("account.addressAdded"));
+  }
+  function remove(id) {
+    setAddresses(current => current.filter(address => address.id !== id));
+    toast.success(t("account.addressRemoved"));
+  }
+  return (
+    <section className="account-panel">
+      <div className="account-panel-heading">
+        <div>
+          <p className="eyebrow">{t("account.addresses")}</p>
+          <h2>{t("account.addressTitle")}</h2>
+          <p className="panel-intro">{t("account.noAddressesCopy")}</p>
+        </div>
+        <button type="button" className="btn-berry" onClick={startNew}>
+          <MapPin size={16} aria-hidden="true" /> {t("account.addAddress")}
+        </button>
+      </div>
+      <p className="account-device-note" role="note">
+        {t("account.savedOnDevice")}
+      </p>
+      {editing && (
+        <AddressForm
+          t={t}
+          form={form}
+          setForm={setForm}
+          error={error}
+          onCancel={closeForm}
+          onSubmit={save}
+        />
+      )}
+      {addresses.length ? (
+        <div className="address-list">
+          {addresses.map(address => (
+            <article className="address-card" key={address.id}>
+              <div>
+                <div className="address-card-title">
+                  <h3>{address.label}</h3>
+                  {address.isDefault && (
+                    <span>{t("account.addressDefault")}</span>
+                  )}
+                </div>
+                <p>
+                  {address.line1}
+                  {address.line2 && (
+                    <>
+                      <br />
+                      {address.line2}
+                    </>
+                  )}
+                  <br />
+                  {address.city}
+                </p>
+                {address.phone && <small>{address.phone}</small>}
+              </div>
+              <div className="address-card-actions">
+                <button
+                  type="button"
+                  className="text-link"
+                  onClick={() => startEdit(address)}
+                >
+                  {t("account.editAddress")}
+                </button>
+                <button
+                  type="button"
+                  className="text-link text-link-danger"
+                  onClick={() => remove(address.id)}
+                >
+                  <Trash2 size={14} aria-hidden="true" />{" "}
+                  {t("account.removeAddress")}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        !editing && (
+          <EmptyState
+            title={t("account.noAddresses")}
+            description={t("account.noAddressesCopy")}
+            actionLabel={t("account.addAddress")}
+            onAction={startNew}
+          />
+        )
+      )}
+    </section>
+  );
 }
-function AddressForm({ t, form, setForm, error, onCancel, onSubmit }) { const update = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.type === "checkbox" ? event.target.checked : event.target.value })); return <form className="account-form address-form" onSubmit={onSubmit} aria-label={t("account.addAddress")}><div className="two-field"><label className="field"><span className="form-label">{t("account.label")}</span><input autoFocus className="form-input" placeholder={t("account.labelHint")} value={form.label} onChange={update("label")} required /></label><label className="field"><span className="form-label">{t("checkout.city")}</span><input autoComplete="address-level2" className="form-input" value={form.city} onChange={update("city")} required /></label></div><label className="field"><span className="form-label">{t("account.line1")}</span><input autoComplete="street-address" className="form-input" value={form.line1} onChange={update("line1")} required /></label><label className="field"><span className="form-label">{t("account.line2")}</span><input autoComplete="address-line2" className="form-input" value={form.line2} onChange={update("line2")} /></label><label className="field"><span className="form-label">{t("checkout.phone")}</span><input autoComplete="tel" inputMode="tel" className="form-input" value={form.phone} onChange={update("phone")} /></label>{error && <p className="field-error" role="alert">{error}</p>}<label className="check-row"><input type="checkbox" checked={form.isDefault} onChange={update("isDefault")} /><span>{t("account.makeDefault")}</span></label><div className="form-actions"><button type="button" className="btn-soft" onClick={onCancel}>{t("account.cancel")}</button><button type="submit" className="btn-berry">{t("account.saveAddress")}</button></div></form>; }
+function AddressForm({ t, form, setForm, error, onCancel, onSubmit }) {
+  const update = key => event =>
+    setForm(current => ({
+      ...current,
+      [key]:
+        event.target.type === "checkbox"
+          ? event.target.checked
+          : event.target.value,
+    }));
+  return (
+    <form
+      className="account-form address-form"
+      onSubmit={onSubmit}
+      aria-label={t("account.addAddress")}
+    >
+      <div className="two-field">
+        <label className="field">
+          <span className="form-label">{t("account.label")}</span>
+          <input
+            autoFocus
+            className="form-input"
+            placeholder={t("account.labelHint")}
+            value={form.label}
+            onChange={update("label")}
+            required
+          />
+        </label>
+        <label className="field">
+          <span className="form-label">{t("checkout.city")}</span>
+          <input
+            autoComplete="address-level2"
+            className="form-input"
+            value={form.city}
+            onChange={update("city")}
+            required
+          />
+        </label>
+      </div>
+      <label className="field">
+        <span className="form-label">{t("account.line1")}</span>
+        <input
+          autoComplete="street-address"
+          className="form-input"
+          value={form.line1}
+          onChange={update("line1")}
+          required
+        />
+      </label>
+      <label className="field">
+        <span className="form-label">{t("account.line2")}</span>
+        <input
+          autoComplete="address-line2"
+          className="form-input"
+          value={form.line2}
+          onChange={update("line2")}
+        />
+      </label>
+      <label className="field">
+        <span className="form-label">{t("checkout.phone")}</span>
+        <input
+          autoComplete="tel"
+          inputMode="tel"
+          className="form-input"
+          value={form.phone}
+          onChange={update("phone")}
+        />
+      </label>
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
+      <label className="check-row">
+        <input
+          type="checkbox"
+          checked={form.isDefault}
+          onChange={update("isDefault")}
+        />
+        <span>{t("account.makeDefault")}</span>
+      </label>
+      <div className="form-actions">
+        <button type="button" className="btn-soft" onClick={onCancel}>
+          {t("account.cancel")}
+        </button>
+        <button type="submit" className="btn-berry">
+          {t("account.saveAddress")}
+        </button>
+      </div>
+    </form>
+  );
+}
 
-export function SettingsPage() { const { t, locale, setLocale } = useLocale(); const [preferences, setPreferences] = useState(() => ({ ...defaultPreferences, ...readStored(PREFERENCE_KEY, {}) })); const [notificationPermission, setNotificationPermission] = useState(() => typeof Notification === "undefined" ? "unsupported" : Notification.permission); useEffect(() => writeStored(PREFERENCE_KEY, preferences), [preferences]); function save(event) { event.preventDefault(); toast.success(t("account.preferencesSaved")); } const toggle = (key) => (event) => setPreferences((current) => ({ ...current, [key]: event.target.checked })); async function enablePush() { if (typeof Notification === "undefined") return; const permission = await Notification.requestPermission(); setNotificationPermission(permission); setPreferences((current) => ({ ...current, push: permission === "granted" })); } return <section className="account-panel"><p className="eyebrow">{t("account.settings")}</p><h2>{t("account.preferencesTitle")}</h2><p className="panel-intro">{t("account.preferencesCopy")}</p><form className="settings-form" onSubmit={save}><fieldset><legend>{t("account.languagePreference")}</legend><label className="radio-row"><input type="radio" name="language" checked={locale === "en"} onChange={() => setLocale("en")} /><span>English</span></label><label className="radio-row"><input type="radio" name="language" checked={locale === "am"} onChange={() => setLocale("am")} /><span>አማርኛ</span></label></fieldset><fieldset><legend>{t("account.accountSecurity")}</legend><label className="check-row"><input type="checkbox" checked={preferences.email} onChange={toggle("email")} /><span>{t("account.emailUpdates")}</span></label><label className="check-row"><input type="checkbox" checked={preferences.sms} onChange={toggle("sms")} /><span>{t("account.smsUpdates")}</span></label><label className="check-row"><input type="checkbox" checked={preferences.marketing} onChange={toggle("marketing")} /><span>{t("account.marketingUpdates")}</span></label><label className="check-row"><input type="checkbox" checked={preferences.reminders} onChange={toggle("reminders")} /><span>{t("account.celebrationReminders")}</span></label><p className="account-device-note">{t("checkout.reminderPreview")}</p><label className="check-row"><input type="checkbox" checked={preferences.push} onChange={toggle("push")} disabled={notificationPermission === "unsupported" || notificationPermission === "denied"} /><span>{t("account.pushUpdates")}</span></label><div className="notification-setting"><p className="account-device-note">{notificationPermission === "granted" ? t("account.pushEnabled") : notificationPermission === "denied" ? t("account.pushDenied") : notificationPermission === "unsupported" ? t("account.pushUnsupported") : t("account.pushCopy")}</p>{notificationPermission === "default" && <button type="button" className="btn-soft" onClick={enablePush}>{t("account.enablePush")}</button>}</div><p className="account-device-note">{t("account.securityCopy")}</p></fieldset><button type="submit" className="btn-berry">{t("account.save")}</button></form><div className="account-danger-zone"><h3>{t("account.privacy")}</h3><p>{t("account.deleteCopy")}</p><a className="text-link" href="mailto:privacy@cakely.example?subject=Account%20deletion%20request">{t("account.deleteAccount")}</a></div></section>; }
+export function SettingsPage() {
+  const { t, locale, setLocale } = useLocale();
+  const [preferences, setPreferences] = useState(() => ({
+    ...defaultPreferences,
+    ...readStored(PREFERENCE_KEY, {}),
+  }));
+  const [notificationPermission, setNotificationPermission] = useState(() =>
+    typeof Notification === "undefined"
+      ? "unsupported"
+      : Notification.permission
+  );
+  useEffect(() => writeStored(PREFERENCE_KEY, preferences), [preferences]);
+  function save(event) {
+    event.preventDefault();
+    toast.success(t("account.preferencesSaved"));
+  }
+  const toggle = key => event =>
+    setPreferences(current => ({ ...current, [key]: event.target.checked }));
+  async function enablePush() {
+    if (typeof Notification === "undefined") return;
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+    setPreferences(current => ({ ...current, push: permission === "granted" }));
+  }
+  return (
+    <section className="account-panel">
+      <p className="eyebrow">{t("account.settings")}</p>
+      <h2>{t("account.preferencesTitle")}</h2>
+      <p className="panel-intro">{t("account.preferencesCopy")}</p>
+      <form className="settings-form" onSubmit={save}>
+        <fieldset>
+          <legend>{t("account.languagePreference")}</legend>
+          <label className="radio-row">
+            <input
+              type="radio"
+              name="language"
+              checked={locale === "en"}
+              onChange={() => setLocale("en")}
+            />
+            <span>English</span>
+          </label>
+          <label className="radio-row">
+            <input
+              type="radio"
+              name="language"
+              checked={locale === "am"}
+              onChange={() => setLocale("am")}
+            />
+            <span>አማርኛ</span>
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>{t("account.accountSecurity")}</legend>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={preferences.email}
+              onChange={toggle("email")}
+            />
+            <span>{t("account.emailUpdates")}</span>
+          </label>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={preferences.sms}
+              onChange={toggle("sms")}
+            />
+            <span>{t("account.smsUpdates")}</span>
+          </label>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={preferences.marketing}
+              onChange={toggle("marketing")}
+            />
+            <span>{t("account.marketingUpdates")}</span>
+          </label>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={preferences.reminders}
+              onChange={toggle("reminders")}
+            />
+            <span>{t("account.celebrationReminders")}</span>
+          </label>
+          <p className="account-device-note">{t("checkout.reminderPreview")}</p>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={preferences.push}
+              onChange={toggle("push")}
+              disabled={
+                notificationPermission === "unsupported" ||
+                notificationPermission === "denied"
+              }
+            />
+            <span>{t("account.pushUpdates")}</span>
+          </label>
+          <div className="notification-setting">
+            <p className="account-device-note">
+              {notificationPermission === "granted"
+                ? t("account.pushEnabled")
+                : notificationPermission === "denied"
+                  ? t("account.pushDenied")
+                  : notificationPermission === "unsupported"
+                    ? t("account.pushUnsupported")
+                    : t("account.pushCopy")}
+            </p>
+            {notificationPermission === "default" && (
+              <button type="button" className="btn-soft" onClick={enablePush}>
+                {t("account.enablePush")}
+              </button>
+            )}
+          </div>
+          <p className="account-device-note">{t("account.securityCopy")}</p>
+        </fieldset>
+        <button type="submit" className="btn-berry">
+          {t("account.save")}
+        </button>
+      </form>
+      <div className="account-danger-zone">
+        <h3>{t("account.privacy")}</h3>
+        <p>{t("account.deleteCopy")}</p>
+        <a
+          className="text-link"
+          href="mailto:privacy@cakely.example?subject=Account%20deletion%20request"
+        >
+          {t("account.deleteAccount")}
+        </a>
+      </div>
+    </section>
+  );
+}
 
-export function AccountPlaceholder({ type }) { const { t } = useLocale(); const translatedType = type === "Addresses" ? t("account.addresses") : t("account.settings"); return <section className="account-panel"><p className="eyebrow">{translatedType}</p><h2>{type === "Addresses" ? t("account.addressTitle") : t("account.preferencesTitle")}</h2><p className="panel-intro">{t("account.foundation")} {translatedType.toLowerCase()}.</p><EmptyState title={`${t("account.noSaved")} ${translatedType.toLowerCase()} ${t("account.yet")}`} description={t("account.addAtCheckout")} actionLabel={t("account.startOrder")} actionTo="/shop" /></section>; }
+export function AccountPlaceholder({ type }) {
+  const { t } = useLocale();
+  const translatedType =
+    type === "Addresses" ? t("account.addresses") : t("account.settings");
+  return (
+    <section className="account-panel">
+      <p className="eyebrow">{translatedType}</p>
+      <h2>
+        {type === "Addresses"
+          ? t("account.addressTitle")
+          : t("account.preferencesTitle")}
+      </h2>
+      <p className="panel-intro">
+        {t("account.foundation")} {translatedType.toLowerCase()}.
+      </p>
+      <EmptyState
+        title={`${t("account.noSaved")} ${translatedType.toLowerCase()} ${t("account.yet")}`}
+        description={t("account.addAtCheckout")}
+        actionLabel={t("account.startOrder")}
+        actionTo="/shop"
+      />
+    </section>
+  );
+}

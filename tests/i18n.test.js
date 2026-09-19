@@ -7,15 +7,23 @@ describe("Cakely localization contract", () => {
     const statusKeys = Object.keys(localeMessages.en.status);
     expect(statusKeys.length).toBeGreaterThan(0);
     for (const key of statusKeys) {
-      expect(localeMessages.am.status[key], `missing Amharic status: ${key}`).toBeTruthy();
-      expect(localeMessages.am.status[key]).not.toBe(localeMessages.en.status[key]);
+      expect(
+        localeMessages.am.status[key],
+        `missing Amharic status: ${key}`
+      ).toBeTruthy();
+      expect(localeMessages.am.status[key]).not.toBe(
+        localeMessages.en.status[key]
+      );
     }
   });
 
   it("provides every validation message in both locales", () => {
     const validationKeys = Object.keys(localeMessages.en.validation);
     for (const key of validationKeys) {
-      expect(localeMessages.am.validation[key], `missing Amharic validation: ${key}`).toBeTruthy();
+      expect(
+        localeMessages.am.validation[key],
+        `missing Amharic validation: ${key}`
+      ).toBeTruthy();
     }
   });
 });

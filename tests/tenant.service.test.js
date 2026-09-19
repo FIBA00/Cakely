@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { getOwnerWorkspace, listPublicTenants, getPublicTenant, toggleOwnerCake } from "./tenant.service";
+import {
+  getOwnerWorkspace,
+  listPublicTenants,
+  getPublicTenant,
+  toggleOwnerCake,
+} from "./tenant.service";
 
 describe("tenant marketplace contracts", () => {
   it("returns only published tenant counters to public visitors", async () => {
     const tenants = await listPublicTenants();
     expect(tenants.length).toBeGreaterThan(0);
-    expect(tenants.every((tenant) => tenant.isPublished)).toBe(true);
+    expect(tenants.every(tenant => tenant.isPublished)).toBe(true);
     expect(tenants[0]).toHaveProperty("slug");
   });
 
@@ -23,6 +28,8 @@ describe("tenant marketplace contracts", () => {
   });
 
   it("blocks an owner from changing another bakery's cake", async () => {
-    await expect(toggleOwnerCake("u-rose", "raspberry-veil", false)).rejects.toThrow("own shop");
+    await expect(
+      toggleOwnerCake("u-rose", "raspberry-veil", false)
+    ).rejects.toThrow("own shop");
   });
 });

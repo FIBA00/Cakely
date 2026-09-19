@@ -9,5 +9,9 @@ export function calculateDelivery(subtotal) {
 
 export function calculateTotal(items) {
   const subtotal = calculateSubtotal(items);
-  return { subtotal, delivery: calculateDelivery(subtotal), total: subtotal + calculateDelivery(subtotal) };
+  return {
+    subtotal,
+    delivery: calculateDelivery(subtotal),
+    total: subtotal + calculateDelivery(subtotal),
+  };
 }

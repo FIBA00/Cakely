@@ -1,5 +1,12 @@
 // Patisserie Postcard: the shop is a bright counter with a compact filter rail and rich product field.
-import { Filter, Grid2X2, List, Search, SlidersHorizontal, X } from "lucide-react";
+import {
+  Filter,
+  Grid2X2,
+  List,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -15,10 +22,238 @@ export default function Shop() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState("grid");
   const [visible, setVisible] = useState(6);
-  const filters = useMemo(() => ({ query: params.get("q") || "", category: params.get("category") || "all", availability: params.get("availability") || "all", price: params.get("price") || "all", dietary: params.get("dietary") || "all", sort: params.get("sort") || "featured" }), [params]);
-  const { data, isLoading, isError, error, refetch } = useQuery({ queryKey: ["cakes", filters], queryFn: () => getCakes(filters) });
-  function update(name, value) { const next = new URLSearchParams(params); if (!value || value === "all" || (name === "sort" && value === "featured")) next.delete(name); else next.set(name, value); setVisible(6); setParams(next); }
-  function reset() { setVisible(6); setParams({}); setFiltersOpen(false); }
-  const filterContent = <div className="filters-content"><div className="filter-heading"><span>{t("shop.refine")}</span><button onClick={reset}>{t("shop.reset")}</button></div><label className="filter-label">{t("shop.occasion")}<select value={filters.category} onChange={(event) => update("category", event.target.value)}><option value="all">{t("shop.allOccasions")}</option>{categories.map((category) => <option key={category.id} value={category.name}>{category.name}</option>)}</select></label><label className="filter-label">{t("shop.dietary")}<select value={filters.dietary} onChange={(event) => update("dietary", event.target.value)}><option value="all">{t("shop.everyCake")}</option><option value="Vegan">Vegan</option><option value="Gluten-free">Gluten-free</option><option value="Dairy-free">Dairy-free</option></select></label><label className="filter-label">{t("shop.price")}<select value={filters.price} onChange={(event) => update("price", event.target.value)}><option value="all">{t("shop.anyPrice")}</option><option value="under-60">Under $60</option><option value="60-80">$60 to $80</option><option value="over-80">Over $80</option></select></label><label className="check-filter"><input type="checkbox" checked={filters.availability === "available"} onChange={(event) => update("availability", event.target.checked ? "available" : "all")} /> <span>{t("shop.available")}</span></label></div>;
-  return <section className="shop-page page-width"><div className="shop-title"><p className="section-kicker">{t("shop.kicker")}</p><h1>{t("shop.headlineA")}<br /><em>{t("shop.headlineB")}</em></h1><p>{t("shop.intro")}</p></div><div className="catalogue-toolbar"><div className="catalogue-search"><Search size={18} /><label className="sr-only" htmlFor="catalogue-search">{t("common.search")}</label><input id="catalogue-search" value={filters.query} onChange={(event) => update("q", event.target.value)} placeholder={t("shop.search")} /><button aria-label={t("shop.clear")} onClick={() => update("q", "")} className={filters.query ? "" : "invisible"}><X size={17} /></button></div><div className="toolbar-actions"><button className="filter-toggle" onClick={() => setFiltersOpen(true)}><Filter size={16} /> {t("shop.filters")}</button><label className="sort-select"><SlidersHorizontal size={15} /><select value={filters.sort} onChange={(event) => update("sort", event.target.value)}><option value="featured">{t("shop.featured")}</option><option value="price-low">{t("shop.low")}</option><option value="price-high">{t("shop.high")}</option><option value="newest">{t("shop.newest")}</option></select></label><div className="view-toggle"><button className={view === "grid" ? "active" : ""} onClick={() => setView("grid")} aria-label={t("shop.grid")}><Grid2X2 size={16} /></button><button className={view === "list" ? "active" : ""} onClick={() => setView("list")} aria-label={t("shop.list")}><List size={16} /></button></div></div></div><div className="catalogue-layout"><aside className="filter-rail">{filterContent}</aside><main><div className="results-meta"><span>{isLoading ? t("shop.setting") : `${data?.total || 0} ${t("shop.consider")}`}</span><span>{filters.query && `${t("shop.results")} “${filters.query}”`}</span></div>{isLoading ? <LoadingState cards /> : isError ? <ErrorState error={error} retry={refetch} /> : data.items.length === 0 ? <EmptyState title={t("shop.noMatch")} description={t("shop.noMatchCopy")} /> : <><div className="catalogue-note"><span>{t("shop.from")}</span><p>{t("shop.note")}</p><small>{t("shop.batches")}</small></div><div className={view === "grid" ? "cakes-grid" : "cakes-list"}>{data.items.slice(0, visible).map((cake) => <CakeCard key={cake.id} cake={cake} compact={view === "list"} />)}</div>{visible < data.items.length && <div className="load-more-wrap"><button className="btn-outline" onClick={() => setVisible((count) => count + 3)}>{t("shop.more")}</button></div>}</>}</main></div>{filtersOpen && <div className="filter-modal"><button aria-label="Close filters" className="filter-backdrop" onClick={() => setFiltersOpen(false)} /><div className="filter-sheet"><div className="flex items-center justify-between"><h2 className="font-display text-3xl">{t("shop.filters")}</h2><button className="icon-button" onClick={() => setFiltersOpen(false)} aria-label="Close filters"><X size={18} /></button></div>{filterContent}<button className="btn-berry mt-6 w-full" onClick={() => setFiltersOpen(false)}>{t("shop.show")}</button></div></div>}</section>;
+  const filters = useMemo(
+    () => ({
+      query: params.get("q") || "",
+      category: params.get("category") || "all",
+      availability: params.get("availability") || "all",
+      price: params.get("price") || "all",
+      dietary: params.get("dietary") || "all",
+      sort: params.get("sort") || "featured",
+    }),
+    [params]
+  );
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["cakes", filters],
+    queryFn: () => getCakes(filters),
+  });
+  function update(name, value) {
+    const next = new URLSearchParams(params);
+    if (!value || value === "all" || (name === "sort" && value === "featured"))
+      next.delete(name);
+    else next.set(name, value);
+    setVisible(6);
+    setParams(next);
+  }
+  function reset() {
+    setVisible(6);
+    setParams({});
+    setFiltersOpen(false);
+  }
+  const filterContent = (
+    <div className="filters-content">
+      <div className="filter-heading">
+        <span>{t("shop.refine")}</span>
+        <button onClick={reset}>{t("shop.reset")}</button>
+      </div>
+      <label className="filter-label">
+        {t("shop.occasion")}
+        <select
+          value={filters.category}
+          onChange={event => update("category", event.target.value)}
+        >
+          <option value="all">{t("shop.allOccasions")}</option>
+          {categories.map(category => (
+            <option key={category.id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="filter-label">
+        {t("shop.dietary")}
+        <select
+          value={filters.dietary}
+          onChange={event => update("dietary", event.target.value)}
+        >
+          <option value="all">{t("shop.everyCake")}</option>
+          <option value="Vegan">Vegan</option>
+          <option value="Gluten-free">Gluten-free</option>
+          <option value="Dairy-free">Dairy-free</option>
+        </select>
+      </label>
+      <label className="filter-label">
+        {t("shop.price")}
+        <select
+          value={filters.price}
+          onChange={event => update("price", event.target.value)}
+        >
+          <option value="all">{t("shop.anyPrice")}</option>
+          <option value="under-60">Under $60</option>
+          <option value="60-80">$60 to $80</option>
+          <option value="over-80">Over $80</option>
+        </select>
+      </label>
+      <label className="check-filter">
+        <input
+          type="checkbox"
+          checked={filters.availability === "available"}
+          onChange={event =>
+            update("availability", event.target.checked ? "available" : "all")
+          }
+        />{" "}
+        <span>{t("shop.available")}</span>
+      </label>
+    </div>
+  );
+  return (
+    <section className="shop-page page-width">
+      <div className="shop-title">
+        <p className="section-kicker">{t("shop.kicker")}</p>
+        <h1>
+          {t("shop.headlineA")}
+          <br />
+          <em>{t("shop.headlineB")}</em>
+        </h1>
+        <p>{t("shop.intro")}</p>
+      </div>
+      <div className="catalogue-toolbar">
+        <div className="catalogue-search">
+          <Search size={18} />
+          <label className="sr-only" htmlFor="catalogue-search">
+            {t("common.search")}
+          </label>
+          <input
+            id="catalogue-search"
+            value={filters.query}
+            onChange={event => update("q", event.target.value)}
+            placeholder={t("shop.search")}
+          />
+          <button
+            aria-label={t("shop.clear")}
+            onClick={() => update("q", "")}
+            className={filters.query ? "" : "invisible"}
+          >
+            <X size={17} />
+          </button>
+        </div>
+        <div className="toolbar-actions">
+          <button
+            className="filter-toggle"
+            onClick={() => setFiltersOpen(true)}
+          >
+            <Filter size={16} /> {t("shop.filters")}
+          </button>
+          <label className="sort-select">
+            <SlidersHorizontal size={15} />
+            <select
+              value={filters.sort}
+              onChange={event => update("sort", event.target.value)}
+            >
+              <option value="featured">{t("shop.featured")}</option>
+              <option value="price-low">{t("shop.low")}</option>
+              <option value="price-high">{t("shop.high")}</option>
+              <option value="newest">{t("shop.newest")}</option>
+            </select>
+          </label>
+          <div className="view-toggle">
+            <button
+              className={view === "grid" ? "active" : ""}
+              onClick={() => setView("grid")}
+              aria-label={t("shop.grid")}
+            >
+              <Grid2X2 size={16} />
+            </button>
+            <button
+              className={view === "list" ? "active" : ""}
+              onClick={() => setView("list")}
+              aria-label={t("shop.list")}
+            >
+              <List size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="catalogue-layout">
+        <aside className="filter-rail">{filterContent}</aside>
+        <main>
+          <div className="results-meta">
+            <span>
+              {isLoading
+                ? t("shop.setting")
+                : `${data?.total || 0} ${t("shop.consider")}`}
+            </span>
+            <span>
+              {filters.query && `${t("shop.results")} “${filters.query}”`}
+            </span>
+          </div>
+          {isLoading ? (
+            <LoadingState cards />
+          ) : isError ? (
+            <ErrorState error={error} retry={refetch} />
+          ) : data.items.length === 0 ? (
+            <EmptyState
+              title={t("shop.noMatch")}
+              description={t("shop.noMatchCopy")}
+            />
+          ) : (
+            <>
+              <div className="catalogue-note">
+                <span>{t("shop.from")}</span>
+                <p>{t("shop.note")}</p>
+                <small>{t("shop.batches")}</small>
+              </div>
+              <div className={view === "grid" ? "cakes-grid" : "cakes-list"}>
+                {data.items.slice(0, visible).map(cake => (
+                  <CakeCard
+                    key={cake.id}
+                    cake={cake}
+                    compact={view === "list"}
+                  />
+                ))}
+              </div>
+              {visible < data.items.length && (
+                <div className="load-more-wrap">
+                  <button
+                    className="btn-outline"
+                    onClick={() => setVisible(count => count + 3)}
+                  >
+                    {t("shop.more")}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </main>
+      </div>
+      {filtersOpen && (
+        <div className="filter-modal">
+          <button
+            aria-label="Close filters"
+            className="filter-backdrop"
+            onClick={() => setFiltersOpen(false)}
+          />
+          <div className="filter-sheet">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-3xl">{t("shop.filters")}</h2>
+              <button
+                className="icon-button"
+                onClick={() => setFiltersOpen(false)}
+                aria-label="Close filters"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            {filterContent}
+            <button
+              className="btn-berry mt-6 w-full"
+              onClick={() => setFiltersOpen(false)}
+            >
+              {t("shop.show")}
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }

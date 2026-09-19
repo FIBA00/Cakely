@@ -6,14 +6,14 @@ Cakely is a responsive, mobile-first cake-ordering Progressive Web App frontend.
 
 The frontend uses **React 19**, JavaScript/JSX, Vite, Tailwind CSS 4, React Router 7, TanStack Query, Zustand, React Hook Form, Zod, Lucide, Motion, Vitest, Playwright, and `vite-plugin-pwa`. Application state that is truly local, namely cart contents, favorites, and mock user session, persists in browser storage. Mock server data remains behind service modules so a FastAPI backend can replace it without rewriting page components.
 
-| Area | Implementation |
-| --- | --- |
-| Public experience | Home, shop filters/search, cake details, custom cake, about, contact, branded not-found |
-| Ordering | Persistent cart, validated checkout, manual payment options, confirmation and tracking timeline |
-| Customer account | Profile, order history, saved cakes, protected routes |
-| Operations | Admin overview, cake availability control, and order status foundation |
-| Resilience | Loading, empty, error, offline, and image fallback states |
-| PWA | Manifest, standalone display, service worker, static precache, image runtime cache, update prompt |
+| Area              | Implementation                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| Public experience | Home, shop filters/search, cake details, custom cake, about, contact, branded not-found           |
+| Ordering          | Persistent cart, validated checkout, manual payment options, confirmation and tracking timeline   |
+| Customer account  | Profile, order history, saved cakes, protected routes                                             |
+| Operations        | Admin overview, cake availability control, and order status foundation                            |
+| Resilience        | Loading, empty, error, offline, and image fallback states                                         |
+| PWA               | Manifest, standalone display, service worker, static precache, image runtime cache, update prompt |
 
 ## Getting started
 

@@ -1,11 +1,13 @@
 # Cakely launch-audit sources
 
 ## W3C WCAG 2.2
+
 Source: https://www.w3.org/WAI/WCAG22/quickref/
 
 Relevant checks for Cakely include text alternatives, language of page and parts, contrast, reflow, keyboard operation, no keyboard traps, focus order and visibility, focus not obscured, link purpose, target size, dragging alternatives, predictable input behavior, labels/instructions, error identification and suggestions, and accessible authentication. The target should be WCAG 2.2 AA for the storefront and owner workspace.
 
 ## web.dev PWA checklist
+
 Source: https://web.dev/articles/pwa-checklist
 
 A production PWA should start fast and stay fast, work across browsers and screen sizes, provide an offline fallback/experience, be installable, be fully accessible, be discoverable in search, support all input types, provide context before permission prompts, and follow healthy-code practices. These are audit criteria rather than proof that the current app already satisfies each one.

@@ -8,16 +8,201 @@ import { LoadingState, ErrorState } from "../components/StateViews";
 import { formatPrice } from "../lib/format";
 
 export function BakeryMarketplace() {
-  const { t } = useLocale(); const [query, setQuery] = useState("");
-  const { data: tenants, isLoading, isError, error, refetch } = useQuery({ queryKey: ["public-tenants", query], queryFn: () => listPublicTenants(query) });
-  return <section className="marketplace-page page-width"><div className="marketplace-hero"><div><p className="section-kicker">{t("marketplace.shops")}</p><h1>{t("marketplace.title")}</h1><p>{t("marketplace.intro")}</p></div><div className="marketplace-hero-stamp"><Store size={21} /><span>{tenants?.length || 0}</span><small>{t("marketplace.published")}</small></div></div><div className="marketplace-toolbar"><label className="marketplace-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("marketplace.search")} /></label><Link className="text-link" to="/owner">{t("marketplace.ownerCta")} <ArrowRight size={16} /></Link></div>{isLoading ? <LoadingState label={t("marketplace.loading")} /> : isError ? <ErrorState error={error} retry={refetch} /> : tenants?.length ? <div className="tenant-grid">{tenants.map((tenant) => <TenantCard tenant={tenant} key={tenant.id} t={t} />)}</div> : <div className="marketplace-empty"><Store size={32} /><h2>{t("marketplace.noShops")}</h2></div>}</section>;
+  const { t } = useLocale();
+  const [query, setQuery] = useState("");
+  const {
+    data: tenants,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["public-tenants", query],
+    queryFn: () => listPublicTenants(query),
+  });
+  return (
+    <section className="marketplace-page page-width">
+      <div className="marketplace-hero">
+        <div>
+          <p className="section-kicker">{t("marketplace.shops")}</p>
+          <h1>{t("marketplace.title")}</h1>
+          <p>{t("marketplace.intro")}</p>
+        </div>
+        <div className="marketplace-hero-stamp">
+          <Store size={21} />
+          <span>{tenants?.length || 0}</span>
+          <small>{t("marketplace.published")}</small>
+        </div>
+      </div>
+      <div className="marketplace-toolbar">
+        <label className="marketplace-search">
+          <Search size={17} />
+          <input
+            value={query}
+            onChange={event => setQuery(event.target.value)}
+            placeholder={t("marketplace.search")}
+          />
+        </label>
+        <Link className="text-link" to="/owner">
+          {t("marketplace.ownerCta")} <ArrowRight size={16} />
+        </Link>
+      </div>
+      {isLoading ? (
+        <LoadingState label={t("marketplace.loading")} />
+      ) : isError ? (
+        <ErrorState error={error} retry={refetch} />
+      ) : tenants?.length ? (
+        <div className="tenant-grid">
+          {tenants.map(tenant => (
+            <TenantCard tenant={tenant} key={tenant.id} t={t} />
+          ))}
+        </div>
+      ) : (
+        <div className="marketplace-empty">
+          <Store size={32} />
+          <h2>{t("marketplace.noShops")}</h2>
+        </div>
+      )}
+    </section>
+  );
 }
 
-function TenantCard({ tenant, t }) { return <article className={`tenant-card tenant-${tenant.accent}`}><Link className="tenant-card-image" to={`/bakeries/${tenant.slug}`}><img src={tenant.coverImage} alt="" /><span className="tenant-card-badge"><Users size={14} />{tenant.cakeCount} {t("marketplace.cakes")}</span></Link><div className="tenant-card-body"><div className="tenant-card-title"><div><p className="eyebrow"><MapPin size={13} /> {tenant.city}</p><h2>{tenant.name}</h2></div><img src={tenant.logo} alt="" /></div><p>{tenant.tagline}</p><Link className="text-link" to={`/bakeries/${tenant.slug}`}>{t("marketplace.viewShop")} <ArrowRight size={15} /></Link></div></article>; }
+function TenantCard({ tenant, t }) {
+  return (
+    <article className={`tenant-card tenant-${tenant.accent}`}>
+      <Link className="tenant-card-image" to={`/bakeries/${tenant.slug}`}>
+        <img src={tenant.coverImage} alt="" />
+        <span className="tenant-card-badge">
+          <Users size={14} />
+          {tenant.cakeCount} {t("marketplace.cakes")}
+        </span>
+      </Link>
+      <div className="tenant-card-body">
+        <div className="tenant-card-title">
+          <div>
+            <p className="eyebrow">
+              <MapPin size={13} /> {tenant.city}
+            </p>
+            <h2>{tenant.name}</h2>
+          </div>
+          <img src={tenant.logo} alt="" />
+        </div>
+        <p>{tenant.tagline}</p>
+        <Link className="text-link" to={`/bakeries/${tenant.slug}`}>
+          {t("marketplace.viewShop")} <ArrowRight size={15} />
+        </Link>
+      </div>
+    </article>
+  );
+}
 
 export function BakeryStorefront() {
-  const { slug } = useParams(); const { t } = useLocale(); const { data: tenant, isLoading, isError, error, refetch } = useQuery({ queryKey: ["public-tenant", slug], queryFn: () => getPublicTenant(slug) });
-  const [query, setQuery] = useState(""); const menu = useMemo(() => (tenant?.menu || []).filter((cake) => `${cake.name} ${cake.category} ${cake.flavor}`.toLowerCase().includes(query.toLowerCase())), [tenant?.menu, query]);
-  if (isLoading) return <div className="page-width py-24"><LoadingState label={t("marketplace.loadingShop")} /></div>; if (isError) return <div className="page-width py-24"><ErrorState error={error} retry={refetch} /></div>;
-  return <section className={`tenant-page page-width tenant-${tenant.accent}`}><div className="tenant-hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(48,32,27,.84), rgba(48,32,27,.22)), url(${tenant.coverImage})` }}><div className="tenant-hero-copy"><p className="section-kicker">{t("marketplace.published")}</p><div className="tenant-brand-lockup"><img src={tenant.logo} alt="" /><span>{tenant.name}</span></div><p className="tenant-city"><MapPin size={15} /> {tenant.city}</p><h1>{tenant.tagline}</h1><p>{tenant.bio}</p></div></div><div className="tenant-menu-head"><div><p className="section-kicker">{t("marketplace.published")}</p><h2>{tenant.name} · {t("marketplace.menu")}</h2></div><label className="marketplace-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("common.search")} /></label></div>{menu.length ? <div className="tenant-menu-grid">{menu.map((cake) => <article className="tenant-menu-item" key={cake.id}><Link to={`/shop/${cake.id}`}><img src={cake.image} alt="" /></Link><div><div className="flex items-start justify-between gap-4"><div><p className="eyebrow">{cake.category}</p><h3>{cake.name}</h3></div><strong>{formatPrice(cake.price)}</strong></div><p>{cake.description}</p><Link className="text-link" to={`/shop/${cake.id}`}>{t("marketplace.viewCake")} <ArrowRight size={15} /></Link></div></article>)}</div> : <div className="marketplace-empty"><Store size={28} /><h2>{t("marketplace.noCakes")}</h2></div>}<div className="tenant-footer-cta"><p>{t("marketplace.orderCta")}</p><Link className="btn-berry" to="/custom-cake">{t("nav.custom")} <ArrowRight size={16} /></Link></div></section>;
+  const { slug } = useParams();
+  const { t } = useLocale();
+  const {
+    data: tenant,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["public-tenant", slug],
+    queryFn: () => getPublicTenant(slug),
+  });
+  const [query, setQuery] = useState("");
+  const menu = useMemo(
+    () =>
+      (tenant?.menu || []).filter(cake =>
+        `${cake.name} ${cake.category} ${cake.flavor}`
+          .toLowerCase()
+          .includes(query.toLowerCase())
+      ),
+    [tenant?.menu, query]
+  );
+  if (isLoading)
+    return (
+      <div className="page-width py-24">
+        <LoadingState label={t("marketplace.loadingShop")} />
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="page-width py-24">
+        <ErrorState error={error} retry={refetch} />
+      </div>
+    );
+  return (
+    <section className={`tenant-page page-width tenant-${tenant.accent}`}>
+      <div
+        className="tenant-hero"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(48,32,27,.84), rgba(48,32,27,.22)), url(${tenant.coverImage})`,
+        }}
+      >
+        <div className="tenant-hero-copy">
+          <p className="section-kicker">{t("marketplace.published")}</p>
+          <div className="tenant-brand-lockup">
+            <img src={tenant.logo} alt="" />
+            <span>{tenant.name}</span>
+          </div>
+          <p className="tenant-city">
+            <MapPin size={15} /> {tenant.city}
+          </p>
+          <h1>{tenant.tagline}</h1>
+          <p>{tenant.bio}</p>
+        </div>
+      </div>
+      <div className="tenant-menu-head">
+        <div>
+          <p className="section-kicker">{t("marketplace.published")}</p>
+          <h2>
+            {tenant.name} · {t("marketplace.menu")}
+          </h2>
+        </div>
+        <label className="marketplace-search">
+          <Search size={17} />
+          <input
+            value={query}
+            onChange={event => setQuery(event.target.value)}
+            placeholder={t("common.search")}
+          />
+        </label>
+      </div>
+      {menu.length ? (
+        <div className="tenant-menu-grid">
+          {menu.map(cake => (
+            <article className="tenant-menu-item" key={cake.id}>
+              <Link to={`/shop/${cake.id}`}>
+                <img src={cake.image} alt="" />
+              </Link>
+              <div>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="eyebrow">{cake.category}</p>
+                    <h3>{cake.name}</h3>
+                  </div>
+                  <strong>{formatPrice(cake.price)}</strong>
+                </div>
+                <p>{cake.description}</p>
+                <Link className="text-link" to={`/shop/${cake.id}`}>
+                  {t("marketplace.viewCake")} <ArrowRight size={15} />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="marketplace-empty">
+          <Store size={28} />
+          <h2>{t("marketplace.noCakes")}</h2>
+        </div>
+      )}
+      <div className="tenant-footer-cta">
+        <p>{t("marketplace.orderCta")}</p>
+        <Link className="btn-berry" to="/custom-cake">
+          {t("nav.custom")} <ArrowRight size={16} />
+        </Link>
+      </div>
+    </section>
+  );
 }

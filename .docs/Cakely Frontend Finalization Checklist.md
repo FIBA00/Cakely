@@ -11,19 +11,19 @@ The application should **not yet be considered production-final** because the vi
 
 ## Current coverage
 
-| Area | Current state | Assessment |
-|---|---|---|
-| Public home, catalogue, product details | Implemented with search, dietary metadata, product details, and empty states | Ready for backend integration |
-| Bakery marketplace and tenant storefronts | Implemented for published bakeries and available cakes | Ready for backend integration |
-| Custom cake builder | Implemented with live top-down preview, size/shape/flavor/color/finish/text/decorations, export/share controls, and geometry-aware anchors | Functional; drag placement remains optional enhancement |
-| Cart and checkout UI | Implemented with validation and bilingual errors | Not production-ready until payment, persistence, pricing, and order confirmation are server-backed |
-| Customer accounts | Profile, order history, favorites implemented; Addresses and Settings are placeholder screens | Incomplete |
-| Owner workspace | Profile, catalogue availability, uploads, order status, finance charts, and public publishing UI implemented | Not production-ready while services use mock state and no real role/tenant persistence |
-| Reviews | Transparent no-reviews-yet/integration-ready state | Correctly avoids fabricated reviews; real verified-review workflow remains |
-| Authentication | Protected route boundary plus explicit demo-owner preview path | Replace demo/mock auth with real customer and owner identity before launch |
-| Localization | Broad English/Amharic coverage including statuses and validation | Needs final audit for all server errors, dates, currency, pluralization, metadata, and uploaded content |
-| PWA | Service worker and manifest generation configured; prompt registration enabled | Verify installability, update UX, offline fallback, icons, and iOS behavior on real devices |
-| Automated validation | Lint, unit tests, production build, and 10 passing E2E tests | Add accessibility, mobile-device, payment, failure-state, and visual regression coverage |
+| Area                                      | Current state                                                                                                                              | Assessment                                                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Public home, catalogue, product details   | Implemented with search, dietary metadata, product details, and empty states                                                               | Ready for backend integration                                                                           |
+| Bakery marketplace and tenant storefronts | Implemented for published bakeries and available cakes                                                                                     | Ready for backend integration                                                                           |
+| Custom cake builder                       | Implemented with live top-down preview, size/shape/flavor/color/finish/text/decorations, export/share controls, and geometry-aware anchors | Functional; drag placement remains optional enhancement                                                 |
+| Cart and checkout UI                      | Implemented with validation and bilingual errors                                                                                           | Not production-ready until payment, persistence, pricing, and order confirmation are server-backed      |
+| Customer accounts                         | Profile, order history, favorites implemented; Addresses and Settings are placeholder screens                                              | Incomplete                                                                                              |
+| Owner workspace                           | Profile, catalogue availability, uploads, order status, finance charts, and public publishing UI implemented                               | Not production-ready while services use mock state and no real role/tenant persistence                  |
+| Reviews                                   | Transparent no-reviews-yet/integration-ready state                                                                                         | Correctly avoids fabricated reviews; real verified-review workflow remains                              |
+| Authentication                            | Protected route boundary plus explicit demo-owner preview path                                                                             | Replace demo/mock auth with real customer and owner identity before launch                              |
+| Localization                              | Broad English/Amharic coverage including statuses and validation                                                                           | Needs final audit for all server errors, dates, currency, pluralization, metadata, and uploaded content |
+| PWA                                       | Service worker and manifest generation configured; prompt registration enabled                                                             | Verify installability, update UX, offline fallback, icons, and iOS behavior on real devices             |
+| Automated validation                      | Lint, unit tests, production build, and 10 passing E2E tests                                                                               | Add accessibility, mobile-device, payment, failure-state, and visual regression coverage                |
 
 ## P0 — Must complete before real customer launch
 
@@ -111,18 +111,18 @@ Use correct `autocomplete` tokens for name, email, phone, address, and payment-p
 
 ## P2 — Important enhancements after the launch baseline
 
-| Enhancement | Why it matters |
-|---|---|
-| Drag-and-drop or touch placement for individual toppings | Improves creative control; must include keyboard and preset-position alternatives because WCAG 2.2 includes dragging and input-modality considerations.[1] |
-| Real verified reviews and ratings | Builds trust after verified order completion; requires moderation, reporting, pagination, owner response, and anti-abuse controls. Never seed or fabricate reviews. |
-| Bakery delivery zones, map/address autocomplete, and ETA | Makes multi-tenant ordering operationally useful; requires privacy, address validation, and fallback for unsupported locations. |
-| Customer reorder and favorites synchronization | Reduces friction for repeat orders and makes account value tangible. |
-| Coupons, gift cards, scheduled ordering, and recurring celebration reminders | Commercial growth features after core payments and order lifecycle are reliable. |
-| Customer support inbox or ticket handoff | Provides recovery for late, damaged, incorrect, or allergy-related orders. |
-| Owner inventory, staff roles, payout statements, and exportable reports | Moves the workspace from a demo dashboard toward a bakery operations product. |
-| Platform admin moderation and tenant approval | Necessary for a true marketplace: bakery verification, suspension, content moderation, complaint handling, and audit logs. |
-| Visual regression and accessibility CI | Protects the bilingual, responsive design from regressions as the product grows. |
-| Install education and notification preferences | Improves PWA adoption without showing permission prompts before explaining their value. |
+| Enhancement                                                                  | Why it matters                                                                                                                                                      |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Drag-and-drop or touch placement for individual toppings                     | Improves creative control; must include keyboard and preset-position alternatives because WCAG 2.2 includes dragging and input-modality considerations.[1]          |
+| Real verified reviews and ratings                                            | Builds trust after verified order completion; requires moderation, reporting, pagination, owner response, and anti-abuse controls. Never seed or fabricate reviews. |
+| Bakery delivery zones, map/address autocomplete, and ETA                     | Makes multi-tenant ordering operationally useful; requires privacy, address validation, and fallback for unsupported locations.                                     |
+| Customer reorder and favorites synchronization                               | Reduces friction for repeat orders and makes account value tangible.                                                                                                |
+| Coupons, gift cards, scheduled ordering, and recurring celebration reminders | Commercial growth features after core payments and order lifecycle are reliable.                                                                                    |
+| Customer support inbox or ticket handoff                                     | Provides recovery for late, damaged, incorrect, or allergy-related orders.                                                                                          |
+| Owner inventory, staff roles, payout statements, and exportable reports      | Moves the workspace from a demo dashboard toward a bakery operations product.                                                                                       |
+| Platform admin moderation and tenant approval                                | Necessary for a true marketplace: bakery verification, suspension, content moderation, complaint handling, and audit logs.                                          |
+| Visual regression and accessibility CI                                       | Protects the bilingual, responsive design from regressions as the product grows.                                                                                    |
+| Install education and notification preferences                               | Improves PWA adoption without showing permission prompts before explaining their value.                                                                             |
 
 ## Recommended finalization order
 
@@ -130,19 +130,18 @@ First, complete persistence, real authentication, payment, order lifecycle, acco
 
 ## Release-candidate acceptance gates
 
-| Gate | Pass condition |
-|---|---|
-| Customer purchase | A new user can browse, customize, pay in sandbox, receive a persisted order, and recover from payment failure. |
-| Bakery operation | An owner can manage only their bakery, publish accurate availability, accept an order, progress it through valid states, and see persisted finance data. |
-| Account | A customer can authenticate, manage profile/address/settings, view order history, and sign out or recover an expired session. |
-| Accessibility | Critical journeys pass keyboard, screen-reader, contrast, focus, zoom, and reduced-motion checks at WCAG 2.2 AA target.[1] |
-| PWA | Install, update, offline fallback, online recovery, and private-data cache behavior are verified on supported browsers.[2] |
+| Gate                 | Pass condition                                                                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Customer purchase    | A new user can browse, customize, pay in sandbox, receive a persisted order, and recover from payment failure.                                                |
+| Bakery operation     | An owner can manage only their bakery, publish accurate availability, accept an order, progress it through valid states, and see persisted finance data.      |
+| Account              | A customer can authenticate, manage profile/address/settings, view order history, and sign out or recover an expired session.                                 |
+| Accessibility        | Critical journeys pass keyboard, screen-reader, contrast, focus, zoom, and reduced-motion checks at WCAG 2.2 AA target.[1]                                    |
+| PWA                  | Install, update, offline fallback, online recovery, and private-data cache behavior are verified on supported browsers.[2]                                    |
 | Trust and compliance | Policies, allergy messaging, consent/privacy treatment, refunds/cancellations, support contact, and real bakery identity are visible before order completion. |
-| Performance | Mobile performance is measured with production-like assets and meets the team’s agreed Core Web Vitals budget. |
-| Quality | Lint, type check, unit, integration, E2E, accessibility, visual regression, and production build checks pass in CI. |
+| Performance          | Mobile performance is measured with production-like assets and meets the team’s agreed Core Web Vitals budget.                                                |
+| Quality              | Lint, type check, unit, integration, E2E, accessibility, visual regression, and production build checks pass in CI.                                           |
 
 ## References
 
 [1]: https://www.w3.org/WAI/WCAG22/quickref/ "W3C — How to Meet WCAG 2.2"
-
 [2]: https://web.dev/articles/pwa-checklist "web.dev — What makes a good Progressive Web App?"

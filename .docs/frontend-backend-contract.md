@@ -6,21 +6,21 @@ Cakely is currently a frontend-first preview. Local mock services and browser st
 
 ## Production boundaries
 
-| Area | Current frontend adapter | Required production contract |
-|---|---|---|
-| Identity | Local/demo user state and route guards | Manus OAuth session, user profile, role/tenant claims, session expiry and sign-out |
-| Catalogue | Local cake and bakery data | Public catalogue query scoped by bakery, availability, dietary tags, images, price and currency |
-| Custom cakes | Client-side design object | Validated design schema, price quote, immutable design snapshot on order, uploaded reference-image key |
-| Cart | Persisted browser cart | Server-validated cart or checkout quote; never trust client prices or bakery availability |
-| Checkout | Local preview order adapter | Idempotent order creation, server-side totals, delivery-zone validation, payment intent/status, confirmation email |
-| Orders | Mock order list and status updates | Ownership-scoped order query, valid state machine, audit events, realtime/polling updates, cancellation/refund state |
-| Addresses | Browser-only address book | Authenticated CRUD, encrypted/sanitized storage, default-address rules, consent and deletion workflow |
-| Reviews | Empty verified-review integration state | Review creation only from eligible delivered orders, moderation status, rating aggregation, abuse/report flow |
-| Media | Object URLs in preview and storage URL placeholders | Signed upload policy, MIME/size validation, malware scanning, image transformations, owner authorization |
-| Notifications | Browser permission and preference UX | Web-push subscription endpoint, email/SMS provider, preference enforcement, unsubscribe and delivery logs |
-| Analytics | Optional consent-gated anonymous script | Consent-aware event endpoint, no PII, retention policy, opt-out deletion and environment-specific IDs |
-| Bakery operations | Local owner workspace | Tenant-scoped catalogue, inventory, staff roles, payouts, exports, audit logs and publish workflow |
-| Admin moderation | Empty integration-ready moderation desk | Tenant review, content reports, verified-review moderation, audit trail and least-privilege admin APIs |
+| Area              | Current frontend adapter                            | Required production contract                                                                                         |
+| ----------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Identity          | Local/demo user state and route guards              | Manus OAuth session, user profile, role/tenant claims, session expiry and sign-out                                   |
+| Catalogue         | Local cake and bakery data                          | Public catalogue query scoped by bakery, availability, dietary tags, images, price and currency                      |
+| Custom cakes      | Client-side design object                           | Validated design schema, price quote, immutable design snapshot on order, uploaded reference-image key               |
+| Cart              | Persisted browser cart                              | Server-validated cart or checkout quote; never trust client prices or bakery availability                            |
+| Checkout          | Local preview order adapter                         | Idempotent order creation, server-side totals, delivery-zone validation, payment intent/status, confirmation email   |
+| Orders            | Mock order list and status updates                  | Ownership-scoped order query, valid state machine, audit events, realtime/polling updates, cancellation/refund state |
+| Addresses         | Browser-only address book                           | Authenticated CRUD, encrypted/sanitized storage, default-address rules, consent and deletion workflow                |
+| Reviews           | Empty verified-review integration state             | Review creation only from eligible delivered orders, moderation status, rating aggregation, abuse/report flow        |
+| Media             | Object URLs in preview and storage URL placeholders | Signed upload policy, MIME/size validation, malware scanning, image transformations, owner authorization             |
+| Notifications     | Browser permission and preference UX                | Web-push subscription endpoint, email/SMS provider, preference enforcement, unsubscribe and delivery logs            |
+| Analytics         | Optional consent-gated anonymous script             | Consent-aware event endpoint, no PII, retention policy, opt-out deletion and environment-specific IDs                |
+| Bakery operations | Local owner workspace                               | Tenant-scoped catalogue, inventory, staff roles, payouts, exports, audit logs and publish workflow                   |
+| Admin moderation  | Empty integration-ready moderation desk             | Tenant review, content reports, verified-review moderation, audit trail and least-privilege admin APIs               |
 
 ## Suggested API resources
 
