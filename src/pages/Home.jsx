@@ -43,20 +43,23 @@ export default function Home() {
   }
   return (
     <>
-      <section classname="relative min-[37rem] overflow-hidden bg-background">
-        <div classname="w-[36rem] m">
+   
+      <section className="relative min-h-[37rem] overflow-hidden bg-background z-2 pt-[5.6rem]">
+        <div className="border border-popover-foreground p-2 mt-1.5 rounded-2xl  m-2 text-primary">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="section-kicker"
+            className="w-[27rem] text-muted-foreground"
           >
             Small-batch celebration cakes
           </motion.p>
+
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.42, delay: 0.06 }}
+            className="w-[27rem] font-display text-5xl font-semibold leading-[1.1] sm:text-6xl"
           >
             <em>Beautiful cakes.</em>
             <br />
@@ -112,7 +115,7 @@ export default function Home() {
           </span>
         </div>
       </section>
-
+{/* 
       <section className="featured-section page-width">
         <div className="section-heading">
           <div>
@@ -309,7 +312,7 @@ export default function Home() {
             </p>
           </form>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

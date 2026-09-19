@@ -32,12 +32,12 @@
 :root {
   --radius: 1rem;
   --background: oklch(0.985 0.008 75);
-  --foreground: oklch(0.24 0.033 45);
+  --foreground: oklch(7.245% 0.00663 18.742);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.24 0.033 45);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.24 0.033 45);
-  --primary: oklch(49.84% 0.18907 27.622);
+  --primary: oklch(57.154% 0.22057 27.944);
   --primary-foreground: oklch(0.99 0.01 75);
   --secondary: oklch(0.94 0.035 80);
   --secondary-foreground: oklch(0.3 0.035 45);
@@ -50,4 +50,16 @@
   --border: oklch(0.87 0.03 60);
   --input: oklch(0.87 0.03 60);
   --ring: oklch(47.379% 0.17191 10.155);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
 }
