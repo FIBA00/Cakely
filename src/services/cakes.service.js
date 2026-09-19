@@ -1,6 +1,6 @@
 // Patisserie Postcard: catalogue services mimic the FastAPI boundary and support real filtering inputs.
 import { cakes, categories } from "../data/mockData";
-import { wait } from "./api";
+import { wait } from "./api.js";
 
 export async function getCakes(params = {}) {
   const {

@@ -1,6 +1,6 @@
 // Patisserie Postcard: auth is intentionally a replaceable mock boundary, never a source of real credentials.
 import { demoUser } from "../data/mockData";
-import { wait } from "./api";
+import { wait } from "./api.js";
 
 export async function login(credentials) {
   if (credentials.email === "wrong@example.com")

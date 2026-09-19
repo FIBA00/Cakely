@@ -1,6 +1,6 @@
 // Patisserie Postcard: orders persist locally only until a real FastAPI service is connected.
 import { starterOrders } from "../data/mockData";
-import { wait } from "./api";
+import { wait } from "./api.js";
 
 const ORDER_KEY = "cakely-orders";
 

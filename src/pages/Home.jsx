@@ -43,8 +43,8 @@ export default function Home() {
   }
   return (
     <>
-      <section className="hero">
-        <div className="hero-text page-width">
+      <section classname="relative min-[37rem] overflow-hidden bg-background">
+        <div classname="w-[36rem] m">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

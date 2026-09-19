@@ -1,14 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: "prompt",
       includeAssets: [],
@@ -58,22 +56,4 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: { alias: { "@": path.resolve(projectRoot, "./client/src") } },
-  root: "client",
-  build: {
-    outDir: "../dist/public",
-    emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
-          "vendor-query": ["@tanstack/react-query"],
-          "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
-          "vendor-motion": ["framer-motion"],
-          "vendor-icons": ["lucide-react"],
-          "vendor-ui": ["sonner", "next-themes"],
-        },
-      },
-    },
-  },
 });

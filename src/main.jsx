@@ -1,4 +1,4 @@
-// Patisserie Postcard: application providers remain small and central; components consume services and persistent stores.
+//  Patisserie Postcard: application providers remain small and central; components consume services and persistent stores.
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";

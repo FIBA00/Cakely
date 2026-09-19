@@ -1,7 +1,7 @@
 // Patisserie Postcard: state surfaces keep every transition helpful, warm, and visually grounded.
 import { AlertCircle, CakeSlice, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useLocale } from "../contexts/LocaleContext";
+import { useLocale } from "../contexts/LocaleContext.jsx";
 
 export function LoadingState({ label, cards = false }) {
   const { t } = useLocale();
